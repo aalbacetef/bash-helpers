@@ -23,13 +23,11 @@ git_branch() {
     is_inside_repo="$(git rev-parse --is-inside-work-tree 2>/dev/null)"
 
     if [[ "$is_inside_repo" == "true" ]]; then
-        added=$(git status --short | cut -d' ' -f 1 | grep -c 'A')
-        modified=$(git status --short | cut -d' ' -f 2 | grep -c 'M')
-        deleted=$(git status --short | cut -d' ' -f 2 | grep -c 'D')
-        untracked=$(git status --short | cut -d' ' -f 1 | grep -c '??')
-
-#        branch_name="git: * $(git_info) || ""Added: $added Modified: $modified Deleted: $deleted Untracked: $untracked"
-#        echo "[ $branch_name ]"
+        st_short=$(git status --short | cut -d' ' -f 2)
+        added=$( echo -n $st_short | grep -c 'A')
+        modified=$( echo -n $st_short | grep -c 'M')
+        deleted=$( echo -n $st_short | grep -c 'D')
+        untracked=$( echo -n $st_short | grep -c '??')
 
         branch_name="git ~ $(git_info) "
         status_output="Add: $added    Mod: $modified    Del: $deleted    Unt: $untracked"
