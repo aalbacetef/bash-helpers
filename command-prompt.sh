@@ -1,3 +1,14 @@
+venv_info() {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        # strip out the path and just leave the env name
+        venv="${VIRTUAL_ENV##*/}"
+    else
+        # in case you don't have one activated
+        venv=''
+    fi
+    [[ -n "$venv" ]] && echo "(venv:$venv) "
+}
+
 git_info() {
     branch_name=$(git status -b -s 2>/dev/null | grep '##' | cut -d' ' -f 2)
 
@@ -22,11 +33,11 @@ git_branch() {
 
         branch_name="git ~ $(git_info) "
         status_output="Add: $added    Mod: $modified    Del: $deleted    Unt: $untracked"
-		echo " 	"
+        echo " 	"
         echo -n " ["
-		echo -n ' '$branch_name
-		echo -n ' || '$status_output
-		echo " ]"
+        echo -n ' '$branch_name
+        echo -n ' || '$status_output
+        echo " ]"
     else
         echo ""
     fi
@@ -34,10 +45,10 @@ git_branch() {
 }
 
 get_branch_info() {
-	b=$(git_branch)
-	if [[ "$b" != "" ]]; then
-		echo "$b"
-	fi
+    b=$(git_branch)
+    if [[ "$b" != "" ]]; then
+        echo "$b"
+    fi
 }
 
 
@@ -53,21 +64,22 @@ RED='\[\033[01;31m\]'
 GREEN='\[\033[01;32m\]'
 BLUE='\[\033[01;34m\]'
 YELLOW="\[\033[1;33m\]"
-
+PINK="\[\033[1;90m\]"
 
 
 login_info='${debian_chroot:+($debian_chroot)}'$GREEN'\u@\h'$RESET_COLOR
 time_var=$RED' \t'$RESET_COLOR
-
-
 size_str=$YELLOW" files: $files_count "$RESET_COLOR
-
 directory=$BLUE'\w'$RESET_COLOR
+venv=$PINK'$(venv_info)'$RESET_COLOR
+
 
 PROMPT_COMMAND='export git_str=$( get_branch_info )'
 
-PS1="\n$login_info $time_var $size_str \n ~> $directory "'$git_str'" \n "'$ '
+## disable venv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 
 
 
+PS1="\n$login_info $time_var $size_str $venv \n ~> $directory "'$git_str'" \n "'$ '
