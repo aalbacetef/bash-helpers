@@ -10,7 +10,7 @@ venv_info() {
 }
 
 git_info() {
-    branch_name=$(git status -b -s 2>/dev/null | grep '##' | cut -d' ' -f 2)
+    branch_name=$(git status -b -s 2>/dev/null | grep '##' | cut -d' ' -f 2 | sed 's/\.\.\..*//' )
 
     if [[ "$branch_name" == "" ]]; then
         branch_name="not a repo"
@@ -23,11 +23,12 @@ git_branch() {
     is_inside_repo="$(git rev-parse --is-inside-work-tree 2>/dev/null)"
 
     if [[ "$is_inside_repo" == "true" ]]; then
-        st_short=$(git status --short | cut -d' ' -f 2)
-        added=$( echo -n $st_short | grep -c 'A')
-        modified=$( echo -n $st_short | grep -c 'M')
-        deleted=$( echo -n $st_short | grep -c 'D')
-        untracked=$( echo -n $st_short | grep -c '??')
+		st_short=$(git status --porcelain)
+
+        added=$( echo -n "$st_short" | grep -Ec '^A' )
+        modified=$( echo -n "$st_short" | grep -Ec '^M|^ M' )
+        deleted=$( echo -n "$st_short" | grep -Ec '^ D' )
+        untracked=$( echo -n "$st_short" | grep -Ec '^\?\?' )
 
         branch_name="git ~ $(git_info) "
         status_output="Add: $added    Mod: $modified    Del: $deleted    Unt: $untracked"
@@ -36,6 +37,12 @@ git_branch() {
         echo -n ' '$branch_name
         echo -n ' || '$status_output
         echo " ]"
+
+		unset added
+		unset modified
+		unset deleted
+		unset untracked
+
     else
         echo ""
     fi
@@ -53,7 +60,6 @@ get_branch_info() {
 # size helpers
 files_count="\$(ls -1 | wc -l | sed 's: ::g')"
 cur_files_size="\$(ls -lah | grep -m 1 total | sed 's/total //')"
-# total_size='$( du -h -d 0 | cut -f 1 )'
 
 
 # color helpers
