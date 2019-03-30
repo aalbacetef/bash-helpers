@@ -23,7 +23,7 @@ git_branch() {
     is_inside_repo="$(git rev-parse --is-inside-work-tree 2>/dev/null)"
 
     if [[ "$is_inside_repo" == "true" ]]; then
-		st_short=$(git status --porcelain)
+		    st_short=$(git status --porcelain)
 
         added=$( echo -n "$st_short" | grep -Ec '^A' )
         modified=$( echo -n "$st_short" | grep -Ec '^M|^ M' )
@@ -38,10 +38,10 @@ git_branch() {
         echo -n ' || '$status_output
         echo " ]"
 
-		unset added
-		unset modified
-		unset deleted
-		unset untracked
+    		unset added
+    		unset modified
+    		unset deleted
+    		unset untracked
 
     else
         echo ""
