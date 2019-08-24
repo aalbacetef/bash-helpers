@@ -24,10 +24,10 @@ git_branch() {
 
     if [[ "$is_inside_repo" == "true" ]]; then
         st_short=$(git status --short | cut -d' ' -f 2)
-        added=$( echo -n $st_short | grep -c 'A')
-        modified=$( echo -n $st_short | grep -c 'M')
-        deleted=$( echo -n $st_short | grep -c 'D')
-        untracked=$( echo -n $st_short | grep -c '??')
+        added=$( echo -n $st_short | grep -o 'A' | grep -c 'A')
+        modified=$( echo -n $st_short | grep -o 'M'|grep -c 'M')
+        deleted=$( echo -n $st_short | grep -o 'D' |grep -c 'D')
+        untracked=$( echo -n $st_short | grep -o '??' | grep -c '??')
 
         branch_name="git ~ $(git_info) "
         status_output="Add: $added    Mod: $modified    Del: $deleted    Unt: $untracked"
